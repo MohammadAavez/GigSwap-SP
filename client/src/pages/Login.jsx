@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // ✅ useLocation add kiya
 import "./Styles/Login.css";
 import { useAuth } from "../store/auth";
 import { toast } from "react-toastify";
@@ -12,11 +12,11 @@ export const Login = () => {
   });
 
   const navigate = useNavigate();
+  const location = useLocation(); // ✅ Location initialize ki
 
   const { storeTokenInLS } = useAuth();
   const URL = "https://gig-swap-hsp-backend.vercel.app/api/auth/login";
 
-  // let handle the input field value
   const handleInput = (e) => {
     let name = e.target.name;
     let value = e.target.value;
@@ -38,20 +38,20 @@ export const Login = () => {
         body: JSON.stringify(user),
       });
 
-      console.log("login form", response);
-
       const res_data = await response.json();
       if (response.ok) {
         storeTokenInLS(res_data.token);
 
         setUser({ email: "", password: "" });
         toast.success("Login Successful");
-        navigate("/");
+
+        // ✅ LOGIC: Agar 'state' mein 'from' path hai toh wahan jao, varna Home "/" jao
+        const origin = location.state?.from || "/";
+        navigate(origin);
       } else {
         toast.error(
           res_data.extraDetails ? res_data.extraDetails : res_data.message
         );
-        console.log("invalid credential");
       }
     } catch (error) {
       console.log(error);
@@ -64,7 +64,6 @@ export const Login = () => {
         <main>
           <div className="section-login">
             <div className="container2 grid2 grid-two-cols2">
-              {/* our main registration code  */}
               <div className="login-form">
                 <h1 className="main-heading mb-3">Login</h1>
                 <br />

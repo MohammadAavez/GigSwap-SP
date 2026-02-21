@@ -1,10 +1,12 @@
 import React from "react";
 import "./Details.css";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom"; // ✅ useLocation add kiya
 import { useAuth } from "../../store/auth";
 
 const Acrepair = () => {
   const { isLoggedIn } = useAuth();
+  const location = useLocation(); // ✅ Isse pata chalega hum "/acrepair" (ya jo bhi url hai) par hain
+
   return (
     <div className="service-detail">
       <div className="sd-header">
@@ -19,13 +21,13 @@ const Acrepair = () => {
           <p className="sd-time">Available: 9:00 AM - 7:00 PM</p>
         </div>
         
-        {/* ✅ Logic: URL mein ?service=Ac-Repair add kiya gaya hai */}
         {isLoggedIn ? (
           <NavLink to="/contact?service=Ac-Repair">
             <button className="sd-book-btn">Book Now</button>
           </NavLink>
         ) : (
-          <NavLink to="/login">
+          /* ✅ LOGIC: state bheja login page ko taaki login ke baad wapas yahi aaye */
+          <NavLink to="/login" state={{ from: location.pathname }}>
             <button className="sd-book-btn">Book Now</button>
           </NavLink>
         )}
